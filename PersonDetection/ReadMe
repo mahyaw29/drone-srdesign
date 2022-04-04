@@ -1,0 +1,15 @@
+xLeft will give you the leftmost coordinates of the detected person, xRight will give you the rightmost coordinates of the detected person
+frameDistance will give you the distance from the camera in centimeters
+
+Example pseudocode
+while(ON=True):
+	while(xLeft<160):
+		turn drone left
+	while(xRight>480):
+		turn drone right
+	while (distance==0):
+		stop drone
+	while(distance<500 centimeters):
+		move drone backward
+	while(distance>750 centimeters):
+		move drone forward
