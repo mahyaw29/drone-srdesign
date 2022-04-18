@@ -1,6 +1,8 @@
 import cv2
 import numpy as np
 import os
+from imutils.object_detection import non_max_suppression
+
 
 # initialize HOG descriptor
 hogDetect = cv2.HOGDescriptor()
@@ -10,6 +12,10 @@ cv2.startWindowThread()
 
 # connect to camera
 capture = cv2.VideoCapture(0)
+
+#For video capture
+output = cv2.VideoWriter('hd.mp4', cv2.VideoWriter_fourcc(*'mp4v'), 20.0, (320,240))
+
 
 pixelWidth=1
 width=45
@@ -50,14 +56,15 @@ while(True):
     ret, frame = capture.read()
 
     # resize frame
-    frame = cv2.resize(frame, (640, 480))
+    frame = cv2.resize(frame, (320, 240))
     # use a grey image
     gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
 
     # return bounding boxes
-    b, w = hogDetect.detectMultiScale(frame, winStride=(8,8) )
+    b, w = hogDetect.detectMultiScale(frame, winStride=(2,2),padding=(8, 8), scale=1.5 )
 
     b = np.array([[x, y, x + w, y + h] for (x, y, w, h) in b])
+    p= non_max_suppression(b, probs=None, overlapThresh=0.65)
 
     count=0
     for (xLeft, yLeft, xRight, yRight) in b:
@@ -75,11 +82,18 @@ while(True):
     #print("PixelWidth: ",pixelWidth)
     if frameDistance!=0:
         print("Distance:",frameDistance)
+    
+    #For video capture
+    output.write(frame.astype('uint8'))
+
     # Display the resulting frame
     cv2.imshow('frame',frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
 
+#For video capture
+output.release()
+
 capture.release()
-cv2.destroyLeftllWindows()
+cv2.destroyAllWindows()
